@@ -1,0 +1,935 @@
+{% extends 'base_app.html' %}
+
+{% block extra_css %}
+  <style>
+      body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          margin: 0;
+          font-family: "Questrial", sans-serif;
+          font-weight: 400;
+          font-style: normal;
+          background-color: #f0f8ff;
+      }
+      .slogan {
+          font-family: "Dancing Script", cursive;
+          font-optical-sizing: auto;
+          font-style: normal;
+      }
+     
+      /* Header */
+      header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #0077b6;
+          color: white;
+          padding: 10px 20px;
+      }
+      .logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+      .logo div {
+          display: flex;
+          flex-direction: column;
+      }
+      .logo-text {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.2;
+      }
+      .logo-text h2 {
+          margin-bottom: 0;
+      }
+      .logo-text p {
+          margin-top: 5px;
+          font-size: 14px;
+          opacity: 0.8;
+      }
+      nav {
+          display: flex;
+      }
+      .menu {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+      }
+      .menu > li {
+          position: relative;
+          padding: 15px 20px;
+          background: #0077b6;
+          color: white;
+          cursor: pointer;
+          white-space: nowrap;
+      }
+      .menu > li:hover {
+          background-color: #005f99;
+      }
+     
+      /* Dropdown */
+      .submenu, .subsubmenu, .subsubsubmenu {
+          display: none;
+          position: absolute;
+          background: white;
+          color: #333;
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          min-width: 200px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          z-index: 100;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s ease, visibility 0s 0.3s;
+      }
+      .submenu {
+          top: 100%;
+          left: 0;
+      }
+      .submenu li, .subsubmenu li, .subsubsubmenu li {
+          padding: 8px 15px;
+          font-size: 16px;
+          border-bottom: 1px solid #ddd;
+          transition: background-color 0.3s ease;
+          white-space: nowrap;
+      }
+      .menu > li:hover > .submenu {
+          display: block;
+          opacity: 1;
+          visibility: visible;
+      }
+      .submenu li {
+          position: relative;
+      }
+      .submenu li:hover > .subsubmenu {
+          display: block;
+          opacity: 1;
+          visibility: visible;
+      }
+      .subsubmenu {
+          top: 0;
+          left: 100%;
+      }
+      .subsubmenu li {
+          position: relative;
+      }
+      .subsubmenu li:hover > .subsubsubmenu {
+          display: block;
+          opacity: 1;
+          visibility: visible;
+      }
+      .subsubsubmenu {
+          top: 0;
+          left: 100%;
+      }
+      .submenu.show-left, .subsubmenu.show-left, .subsubsubmenu.show-left {
+          left: auto;
+          right: 100%;
+      }
+      .submenu li:hover, .subsubmenu li:hover, .subsubsubmenu li:hover {
+          background-color: #f1f1f1;
+      }
+     
+      /* Layout chính - Mục lục bên trái, nội dung bên phải */
+      .main-content {
+          display: flex;
+          flex: 1;
+      }
+     
+      /* Sidebar mục lục */
+      .sidebar {
+          width: 250px;
+          background-color: #fff;
+          padding: 20px;
+          box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          overflow-y: auto;
+      }
+     
+      .toc-title {
+          font-size: 24px;
+          color: #0077b6;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #0077b6;
+      }
+     
+      .toc-list {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+      }
+     
+      .toc-list li {
+          padding: 10px 0;
+          border-bottom: 1px solid #eee;
+      }
+     
+      .toc-list a {
+          color: #333;
+          text-decoration: none;
+          font-size: 16px;
+          transition: all 0.3s;
+          display: block;
+      }
+     
+      .toc-list a:hover {
+          color: #0077b6;
+          padding-left: 5px;
+      }
+     
+      /* Phần nội dung chính */
+      .content-area {
+          flex: 1;
+          padding: 30px;
+      }
+     
+      .content-section {
+          background-color: #fff;
+          border-radius: 8px;
+          padding: 30px;
+          margin-bottom: 30px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+     
+      .content-section h2 {
+          color: #0077b6;
+          border-bottom: 2px solid #0077b6;
+          padding-bottom: 10px;
+          margin-bottom: 20px;
+      }
+     
+      /* Responsive */
+      @media (max-width: 768px) {
+          .main-content {
+              flex-direction: column;
+          }
+         
+          .sidebar {
+              width: 100%;
+              height: auto;
+              position: static;
+          }
+         
+          .content-area {
+              padding: 15px;
+          }
+      }
+      .menu > li:first-child {
+        background-color: #0077b6 !important;
+        color: white !important;
+        }
+        .menu > li:first-child > a {
+            color: white !important;
+        }
+    .menu > li:hover {
+        background-color: #005f99;
+    }
+    .auth-section {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        padding: 0 20px;
+    }
+    
+    .auth-buttons, .user-info {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .auth-button {
+        padding: 8px 15px;
+        background-color: #0077b6;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    
+    .auth-button:hover {
+        background-color: #005f99;
+    }
+    
+    .user-info {
+        align-items: center;
+        color: white;
+        font-size: 14px;
+    }
+    .menu a, 
+    .menu a:visited, 
+    .menu a:hover, 
+    .menu a:active {
+    color: black !important; /* Màu đen */
+    text-decoration: none !important; /* Không gạch chân */
+    font-family: "Questrial", sans-serif !important; /* Giữ nguyên phông chữ */
+    }
+    .submenu a, 
+    .submenu a:visited, 
+    .submenu a:hover, 
+    .submenu a:active,
+    .subsubmenu a,
+    .subsubmenu a:visited,
+    .subsubmenu a:hover,
+    .subsubmenu a:active,
+    .subsubsubmenu a,
+    .subsubsubmenu a:visited,
+    .subsubsubmenu a:hover,
+    .subsubsubmenu a:active {
+    color: #333 !important; /* Màu đen đậm */
+    text-decoration: none !important;
+    font-family: "Questrial", sans-serif !important;
+    }
+  </style>
+  {% endblock %}
+
+  {% block content %}
+   <header>
+    <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
+       <div class="logo">
+           <img src="https://upload.wikimedia.org/wikipedia/vi/0/09/Huy_Hi%E1%BB%87u_%C4%90o%C3%A0n.png" alt="Logo 1" height="60">
+           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bi%E1%BB%83u_tr%C6%B0ng_H%E1%BB%99i_Li%C3%AAn_hi%E1%BB%87p_Thanh_ni%C3%AAn_Vi%E1%BB%87t_Nam.svg/1200px-Bi%E1%BB%83u_tr%C6%B0ng_H%E1%BB%99i_Li%C3%AAn_hi%E1%BB%87p_Thanh_ni%C3%AAn_Vi%E1%BB%87t_Nam.svg.png" alt="Logo 2" height="60">
+           <img src="https://upload.wikimedia.org/wikipedia/vi/d/df/Huy_hi%E1%BB%87u_%C4%90%E1%BB%99i_TNTP_H%E1%BB%93_Ch%C3%AD_Minh_%282018%29.png" alt="Logo 3" height="60">
+           <div class="logo-text">
+               <h2>THƯ VIỆN KỸ NĂNG</h2>
+               <p style="font-size: 14px; margin: 0; opacity: 0.8; display: block;" class="slogan">"Thanh thiếu niên thành phố vững kiến thức, thạo kỹ năng"</p>
+           </div>
+       </div>
+    </a>
+       <nav>
+        <ul class="menu">
+        <li><a href="{% url 'kienthuc' %}" class="menu-item" id="kienthuc">Kiến thức</a></li>
+            <li>
+                Kỹ năng truyền tin
+                <ul class="submenu">
+                    <li><a href="{% url 'morse' %}" class="menu-item">Morse</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Luyện tập</li>
+                        </ul>
+                    </li>
+                    <li>
+                     <a href="{% url 'semaphore' %}" class="menu-item">Semaphore</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Luyện tập</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'matthu' %}" class="menu-item">
+                        Mật thư
+                    </a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Luyện tập
+                                <ul class="subsubsubmenu">
+                                    <li>Thay thế</li>
+                                    <li>Dời chỗ</li>
+                                    <li>Ẩn dấu</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        Dấu đường</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Kỹ năng trại
+                <ul class="submenu">
+                    <li><a href="{% url 'nutday' %}" class="menu-item">Nút dây</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'leutrai' %}" class="menu-item">Lều trại</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Kỹ năng dã ngoại
+                <ul class="submenu">
+                    <li><a href="{% url 'phuonghuong' %}" class="menu-item">Phương hướng</a>
+                    </li>
+                    <li><a href="{% url 'uocdat' %}" class="menu-item">Ước đạc - Ước lượng</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Kỹ năng sinh hoạt tập thể
+                <ul class="submenu">
+                    <li><a href="{% url 'muahat' %}" class="menu-item">Múa hát tập thể</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'trochoi' %}" class="menu-item">Trò chơi lớn</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Kỹ năng thực hành xã hội
+                <ul class="submenu">
+                    <li><a href="{% url 'thoathiem' %}" class="menu-item">Kỹ năng thoát hiểm</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'thuoctay' %}" class="menu-item">Nhận biết thuốc tây</a>
+                        <ul class="subsubmenu">
+                            <li>Nhận biết một số loại thuốc phổ biến</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'thuocnam' %}" class="menu-item">Nhận biết thuốc nam</a>
+                        <ul class="subsubmenu">
+                            <li>Nhận biết một số loại thuốc nam phổ biến</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'scc' %}" class="menu-item">Sơ cấp cứu</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Nghiệp Vụ
+                <ul class="submenu">
+                    <li><a href="{% url 'nghithucdoi' %}" class="menu-item">Nghi thức Đội</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'nghithucdoi' %}" class="menu-item">Nghi thức Hội</a>
+                        <ul class="subsubmenu">
+                            <li>Lý thuyết</li>
+                            <li>Thực hành</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>Cộng đồng</li>
+        </ul>
+    </nav>
+       <div class="auth-section">
+        {% if user.is_authenticated %}
+            <div class="user-info">
+                <span>Xin chào, {{ user.username }}</span>
+               <!-- <a href="{% url 'dashboard' %}" class="auth-button">Vào Dashboard</a> -->
+                <a href="{% url 'logout' %}" class="auth-button">Đăng xuất</a>
+            </div>
+        {% else %}
+            <div class="auth-buttons">
+                <a href="{% url 'login' %}" class="auth-button btn btn-success">Đăng nhập</a>
+            </div>
+        {% endif %}
+       </div> 
+   </header>
+
+
+  <div class="main-content">
+      <!-- Sidebar mục lục -->
+      <aside class="sidebar">
+          <h2 class="toc-title">Mục lục</h2>
+          <ul class="toc-list">
+              <li><a href="#section1">Định hướng bằng hướng gió</a></li>
+              <li><a href="#section2">Định hướng bằng góc cây mọc</a></li>
+              <li><a href="#section3">Định hướng bằng mặt trăng</a></li>
+              <li><a href="#section4">Định hướng bằng bóng nắng</a></li>
+              <li><a href="#section5">Phương pháp dùng đô fhoof có kim chỉ giờ và mặt trời</a></li>
+              <li><a href="#section6">Định hướng bằng sao trời</a></li>
+              <li><a href="#section7">Tìm phương hướng bằng dịa bàn</a></li>
+          </ul>
+      </aside>
+
+
+
+
+      <!-- Nội dung chính -->
+      <main class="content-area">
+          <section id="section1" class="content-section">
+              <h2>Định hướng bằng hướng gió</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <p>
+                            <ul>
+                                <li>Ở Việt Nam có hai mùa gió chính:</li>
+                                <li><strong>Gió Nam (gió mùa hạ):</strong>
+                                  <ul>
+                                    <li>Thổi từ tháng 4–5 đến tháng 10–11 (dương lịch).</li>
+                                    <li>Hướng gió: từ biển Đông thổi vào lục địa theo hướng Tây Nam – Đông Bắc hoặc Đông Nam – Tây Bắc.</li>
+                                    <li>Gió thường mang theo hơi nước và gây mưa.</li>
+                                  </ul>
+                                </li>
+                                <li><strong>Gió Bấc (gió mùa Đông):</strong>
+                                  <ul>
+                                    <li>Thổi từ tháng 10–11 đến tháng 4–5.</li>
+                                    <li>Thổi từ lục địa ra biển theo hướng Đông Bắc – Tây Nam.</li>
+                                    <li>Gió khô, không mang theo mưa.</li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            <img src="https://scontent.fsgn2-7.fna.fbcdn.net/v/t1.15752-9/491276140_978860174407880_8833006828170296167_n.png?_nc_cat=108&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeGqB_gDwWusFmnU2aInR1TvObTxQNVBtk45tPFA1UG2TkSTmGzzvOlhuS-o5w3gnxdjdTvaoGskhT4GMm2EEqQk&_nc_ohc=JtKNx6yQOK8Q7kNvwEo6vXl&_nc_oc=AdmybKDzQViYjEerVWd3rqLvJ4cBbU8m_CAO69cZzJZK0M7T4qxNFIQZJy27pVsBA78&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-7.fna&oh=03_Q7cD2AGSSsO3wTvAUDvhme9Z5Md7T6FlniSBYOAhjFQEKsQGbg&oe=683190F9">
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main>
+          </section>
+       
+          <section id="section2" class="content-section">
+              <h2>Định hướng bằng gốc cây mọc</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <p>
+                            <ul>
+                                <li>Trong rừng ẩm và thiếu sáng, rêu thường mọc ở gốc cây lớn.</li>
+                                <li>Gốc cây có rêu mọc và ẩm ướt thường là phía Bắc.</li>
+                                <li>Trên các tảng đá lớn, rêu thường mọc ở hướng Bắc.</li>
+                                <li>Các tán cây phát triển mạnh về hướng Nam do có nhiều ánh sáng.</li>
+                              </ul>
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main>
+          </section>
+       
+          <section id="section3" class="content-section">
+              <h2>Định hướng bằng mặt trăng</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <p>
+                            <ul>
+                                <li>Mặt trăng mọc ở Đông, lặn ở Tây.</li>
+                                <li><strong>Trăng thượng tuần:</strong>
+                                  <ul>
+                                    <li>Từ mùng 1 đến 14 âm lịch, trăng hình lưỡi liềm, đầu nhọn quay về Đông (trăng non).</li>
+                                    <li>18h trăng ở hướng Nam, 24h trăng ở hướng Tây.</li>
+                                  </ul>
+                                </li>
+                                <li><strong>Trăng rằm:</strong>
+                                  <ul>
+                                    <li>Ngày 15-16, trăng tròn và sáng nhất.</li>
+                                    <li>18h trăng ở hướng Đông, 24h trăng ở hướng Nam.</li>
+                                  </ul>
+                                </li>
+                                <li><strong>Trăng hạ tuần:</strong>
+                                  <ul>
+                                    <li>Trăng khuyết quay về Tây, lên muộn (sau 24h).</li>
+                                    <li>24h trăng ở hướng Đông, 6h sáng ở hướng Tây.</li>
+                                  </ul>
+                                </li>
+                            <img src="https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.15752-9/491006727_2109031599613862_7079223052443914953_n.png?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeE42Xa8QYOGQILpyKtdmnDEbS1RWl4BwTFtLVFaXgHBMdHOR-_7MU7-9_J3cPoEyKCfNhgsROQre9UWBOq7huwt&_nc_ohc=YzT5zVVFpfcQ7kNvwHNnHzh&_nc_oc=AdlCNaAEJ0_Zkqq_YjIvTpL5yLeYTXmtasxWWfnOK0qunl4gIq01BFKN0WGVnbjFihE&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&oh=03_Q7cD2AGFT1vghm4DSWkdrfeqrL5QjaYg-ORZdvEXZ1DFYYCCrw&oe=68318E4B">
+                            <li><em>Ghi nhớ dân gian:</em>
+                                <ul>
+                                  <li>“Đầu trăng, trăng khuyết đằng Đông – Cuối trăng, trăng khuyết đằng Tây”.</li>
+                                  <li>“Đầu tháng Tây trắng – Cuối tháng Tây đen”.</li>
+                                  <li>Đầu tháng: phần sáng chỉ hướng Tây. Cuối tháng: phần sáng chỉ hướng Đông.</li>
+                                </ul>
+                              </li>
+                            </ul>   
+                            <img src="https://scontent.fsgn2-9.fna.fbcdn.net/v/t1.15752-9/483723288_1210734633855030_8479121129692594931_n.png?_nc_cat=103&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeHSBXp2rWcNBoqqnBIOL2JRksI-g9FEXpySwj6D0URenGQ3GSj1MKKJB4iFQ5AW14YkI2GUwq_yiRWM43eBCF88&_nc_ohc=0a3C8LcoKL0Q7kNvwHeTZD1&_nc_oc=Adn4J6clqnbNf1cowbLmJ_P0QwcH4EUs78wwVSqujBGuqSR9tNF1gw_dXgn7kTML2gY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-9.fna&oh=03_Q7cD2AFIh8cRX4qYKll-qWCiPdybN5pJOcOgbDsRSZgSH9CUtA&oe=68319602">
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main>
+          </section>
+       
+          <section id="section4" class="content-section">
+              <h2>Định hướng bằng bóng nắng</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <ul>
+                            <li><strong>A) Phương pháp bóng nắng vòng tròn:</strong>
+                              <ul>
+                                <li>Vẽ một vòng tròn, chia thành các mốc giờ như đồng hồ (6h Đông, 12h Nam, 18h Tây, 24h Bắc).</li>
+                                <li>Đặt que theo đúng giờ hiện tại, xoay tờ giấy sao cho bóng que đi qua tâm vòng tròn.</li>
+                                <li>Hướng bóng trùng với hướng đã ghi giúp xác định phương hướng.</li>
+                                <li>Cần đồng hồ chính xác để thực hiện phương pháp này.</li>
+                              </ul>
+                            </li>
+                            <img src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t1.15752-9/491031231_1710587972865390_6125474712580065128_n.png?_nc_cat=102&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeEpbynlEd2K09xWxYrTBFJmcTQUsHNc3sxxNBSwc1zezJpIgrP-XCp2q80TS8ELCAzJgLI6oVyNLR4d9cg56hyG&_nc_ohc=Hq2eN8uiaeQQ7kNvwG0U1HG&_nc_oc=AdnW2dAhLKDrCF6uMNoKE4tgfYV_dJShbGtHdsEfUWGewjUl1Ru6lb58iTn_QFrsDsw&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-8.fna&oh=03_Q7cD2AFYROeNQwJ52OcjCIR8GeDj8qybcoTxWLRQFAc2icE5OQ&oe=68319E2D">
+                            <li><strong>B) Phương pháp dùng gậy và bóng nắng (Owendoff):</strong>
+                                <ul>
+                                  <li>Cắm gậy xuống đất, đánh dấu điểm đầu bóng là T.</li>
+                                  <li>Khoảng 15 phút sau, đánh dấu điểm mới là Đ.</li>
+                                  <li>Nối T và Đ: T là hướng Tây, Đ là hướng Đông.</li>
+                                  <li>Từ trục Đông – Tây, xác định các hướng còn lại.</li>
+                                </ul>
+                              </li>
+                            <img src="https://scontent.fsgn2-3.fna.fbcdn.net/v/t1.15752-9/490975901_1886497768753260_9131231984775733806_n.png?_nc_cat=107&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeFX9vYBlxqyzNEz-Y3_ZMavM-tp_MnTet8z62n8ydN63_lwFS2l6MlKI-sGDhfOWSOG0zCiRGBLof1_ZHo67eP5&_nc_ohc=CCz5W4RsTN0Q7kNvwFvbT_H&_nc_oc=Adn8t1HtooHV84_2-BJe0qWY-7MB1FJpu4aOaHIS4sqsEMoD2dfcUAzlgY4GTvSj6ZA&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-3.fna&oh=03_Q7cD2AFjdIWbcPqJ4BGWRgOec_5cEw-UqufH_4ymotvouXC0NQ&oe=6831AFED">
+                            <li><strong>C) Phương pháp cây không bóng:</strong>
+                                <ul>
+                                  <li>Dùng gậy dài 1m cắm nghiêng về phía mặt trời sao cho không có bóng.</li>
+                                  <li>Sau 10 phút, bóng sẽ hiện ra. Hướng bóng chỉ về hướng Đông.</li>
+                                  <li>Không cần đồng hồ hoặc địa bàn.</li>
+                                </ul>
+                              </li>
+                            </ul>
+                            <img src="https://scontent.fsgn2-7.fna.fbcdn.net/v/t1.15752-9/490986532_1017582673374961_4137553512372540537_n.png?_nc_cat=108&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeFHQpcn2BeC52t02xHr7QEb_jTm1QS2XS_-NObVBLZdLxpUaVikLVJXgLRvxjLhBpUcdCA3ifbnxF356OFwi-vr&_nc_ohc=R-iLcnNY6QwQ7kNvwHrTPgP&_nc_oc=Adk5cpsE0C8jNAEfYHn1RbwOZ72aPW60eKIzfm8hmJKc7EbJxOL-7rdTBm3YLXTPoW8&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-7.fna&oh=03_Q7cD2AFL0KJZLgzf_aAhHaPGaAYIjC7d9vD3lKxfbO1zqNOjkA&oe=6831B995">
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main>
+          </section>
+       
+          <section id="section5" class="content-section">
+              <h2>Phương pháp dùng đồng hồ có kim chỉ giờ và mặt trời</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <p>
+                            <ul>
+                                <li>Đặt đồng hồ nằm ngang trên mặt phẳng.</li>
+                                <li>Quay đồng hồ sao cho kim giờ (A) trùng với bóng của một cây gậy.</li>
+                                <li>Kẻ đường phân giác giữa kim giờ (A) và số 12 (B).</li>
+                                <li><strong>Buổi sáng:</strong> phân giác chỉ hướng Nam (tính theo chiều kim đồng hồ).</li>
+                                <li><strong>Buổi chiều:</strong> phân giác chỉ hướng Bắc (tính ngược chiều kim đồng hồ).</li>
+                                <li><strong>Lưu ý:</strong> Nếu ở Nam bán cầu thì tính ngược lại.</li>
+                              </ul>     
+                            <img src="https://scontent.fsgn2-9.fna.fbcdn.net/v/t1.15752-9/490987020_720681463690522_9101605094572428335_n.png?_nc_cat=106&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeH54tU7ziqIdBvq2KntC7MBw-UhsltcbxvD5SGyW1xvG5Q4WZmVBO-J4UN0fRjL7n54CmqmRK6b8f0qoChTJVIt&_nc_ohc=GDPaMKrOf24Q7kNvwHjKauh&_nc_oc=AdmbBx2JAJ9ctoLkqe1XRb-SZ323iS8D-VHt_N8g2BwzWfC_Eg5K9KFBUQVMyfRn6Iw&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-9.fna&oh=03_Q7cD2AGSmIfU_ulEETfSFBEzVeFq_WEExG9asVPZUCYndHKBtw&oe=6831A6DE">
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main>
+          </section>
+       
+          <section id="section6" class="content-section">
+              <h2>Định hướng bằng sao trời</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <p>
+                            Vào những đêm không có trăng, sao mọc đầy trời, muốn tìm phương hướng cho 
+                            chính <br>
+                            xác, bạn phải tìm đến sao Bắc cực (Bắc đẩu: Etoile Polaire) để biết hướng Bắc hoặc sao 
+                            Nam Thập (Croix du Sud) để biết hướng Nam. Sao Bắc cực lãi nhỏ, vì vậy muốn tìm sao 
+                            Bắc cực ta phải dựa vào các chòm sao nào tương đối sáng có hình dạng đặc trưng, dễ 
+                            nhận dạng, thường xuyên xuất hiện trên bầu trời, từ đó bằng cách kéo dài những đoạn 
+                            tưởng tượng để tìm đến sao Bắc cực. Biết được hướng Bắc rối thì ta dễ dàng xác lập các 
+                            hướng còn lại.  <br>
+                            Một số còm sao thường được dùng để tìm sao Bắc cực ở nửa cầu Bắc. 
+                            <br>
+                            <h3>bằng chòm sao Bắc Đẩu:</h3> <br>
+                            Gồm 2 chòm sao:<br>   
+                            Có tên là: chòm Đại Hùng Tinh (gấu lớn) & chòm Tiểu Hùng Tinh(Gấu nhỏ). Sao 
+                            Bắc cực là 1 ngôi sao sáng nhất của chòm gấu nhỏ. Vì mắt thường khó thấy sao này nên 
+                            ta phải nhờ đến chòm sao Đại Hùng Tinh để tìm sao Bắc cực. 
+                            <h4>Chòm sao Gấu lớn:</h4> <br>
+                            Tên gọi: Grand Ourse, Big Dipper, Ursa Major. - Bắc Đẩu, Thất tinh, Đại Hùng Tinh, Đại xa tóa.
+                            <h4>Mô tả:</h4>
+                            - Có hình giống cái Soong hay cán gáo… tuỳ theo bạn tưởng tưởng.<br>
+                            - Gồm có 7 sao sáng: 4 sao thân Soong và 3 sao ở cán Soong. <br> 
+                            <img src="https://scontent.fsgn2-10.fna.fbcdn.net/v/t1.15752-9/490991087_1281159170007285_8894128699008099248_n.png?_nc_cat=109&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeH-hNB4SZABo1KDHpBYkxIpxmzmMmWi273GbOYyZaLbvVbO-C6In2-Y8FdeummAbe6Oq_r_MZa0E98rTcqIq4ib&_nc_ohc=mJOnK6tlTRAQ7kNvwEDec1i&_nc_oc=AdlndzkTF8TW6TOiu9_N-L62WlF_jcVwj9dAbxEce-GGKIkTzSG-wWhG_krP8o9aXd0&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-10.fna&oh=03_Q7cD2AGDxpHKOnc2f6rJ34rUqvbtIL5BBwSlH0nuWptXgzDwNA&oe=6831ABCB">
+                            <br>
+                            <h4>Định phương hướng:</h4>
+                            <br>                             b
+                            -Kéo dài cạnh ngoài của đáy soong (cạnh ab) 5 đoạn bằng cạnh ab sẽ gặp sao Bắc 
+                            cực. 
+                            <br>
+                            − Xuất hiện (từ chập tối) suốt đêm, từ tháng 3 đến tháng 8. Những tháng khác vào 
+                            mùa đông chòm Đại Hùng Tinh xuất hiện rất khuya hoặc gần sáng mới thấy.    
+                            <br>
+                            - Ngoài ra chòm Đại Hình Tinh người ta còn sử dụng để dự đoán giờ bằng đuôi của 
+                            nó. Buổi tối, đuôi chòm này ở phía Đông, sáng sớm, đuôi ngã về phía Tây. Nhân gian có 
+                            câu: 
+                            <br>
+                            Đêm khuya thức dậy trông giờ,    
+                            <br>
+                            Đuôi sao Bắc Đẩu đã rời phương đông    
+                            <br>
+                            Trở vào buồn học gọi chồng, 
+                            <br>
+                            Trở ra sắp gánh, sắp gồng ra đi.
+                            <br>
+                            <img src="https://scontent.fsgn2-3.fna.fbcdn.net/v/t1.15752-9/490975901_1886497768753260_9131231984775733806_n.png?_nc_cat=107&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeFX9vYBlxqyzNEz-Y3_ZMavM-tp_MnTet8z62n8ydN63_lwFS2l6MlKI-sGDhfOWSOG0zCiRGBLof1_ZHo67eP5&_nc_ohc=CCz5W4RsTN0Q7kNvwFvbT_H&_nc_oc=Adn8t1HtooHV84_2-BJe0qWY-7MB1FJpu4aOaHIS4sqsEMoD2dfcUAzlgY4GTvSj6ZA&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-3.fna&oh=03_Q7cD2AFjdIWbcPqJ4BGWRgOec_5cEw-UqufH_4ymotvouXC0NQ&oe=6831AFED">
+                            <br>
+                            <h3>Bằng chòm Thiên Nga:</h3>
+                            <ul>
+                                <li><strong>Tên gọi:</strong> Cygen – Swan – Cynus – Northern Cross, Hạc trắng – Ngỗng trời – Thập tự Bắc – Thiên Nga.</li>
+                                <li><strong>Mô tả:</strong>
+                            <ul>
+                                <li>Gồm 5 sao xếp thành hình chữ thập, hơi gãy.</li>
+                                <li>Chòm Thiên Nga còn gọi là Thập Tự Bắc (Bắc Thập) để phân biệt với chòm Nam Thập ở bán cầu Nam.</li>
+                            </ul>
+                            </li>
+                            </ul>
+
+                            <p><strong>Định phương hướng với chòm Thiên Nga:</strong></p>
+                            <ul>
+                                <img src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t1.15752-9/491274149_1064573282157545_2851473591008321325_n.png?_nc_cat=102&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeE5dEyN3g0CEqI08drY_Q9ynX_RqlcAQIWdf9GqVwBAhbF_6hkwEgMX137cLYs9_cPWmju1w6CSCK55aJh1ICYh&_nc_ohc=XQXUxzn2cDoQ7kNvwHXrksR&_nc_oc=AdnyLD85lzWyL7R9M8cQvvm9KwqLr2In34BD4832rbF0upM7raOILphZYQLw_6dXir4&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-8.fna&oh=03_Q7cD2AHtKb6ly59QfFUOqW9t8XMQPUxFGc4JsdHRwFux6EwGRQ&oe=68319A32">
+                            <li>Kéo dài cạnh ab khoảng 4 đoạn bằng ab sẽ gặp sao Bắc Cực.</li>
+                            <li>Xuất hiện suốt đêm giữa mùa hạ sang đầu mùa thu (tháng 5 – 8).</li>
+                            <li>Mùa đông (tháng 10 – 12) xuất hiện từ chập tối đến nửa đêm, gần về sáng thì lặng.</li>
+                            <li>Mọc sau chòm Gấu lớn hơn 6 giờ.</li>
+                            </ul>
+                            <p><strong>Định phương hướng với chòm Thiên Nga:</strong></p>
+                            <ul>
+                            <li>Kéo dài cạnh ab khoảng 4 đoạn bằng ab sẽ gặp sao Bắc Cực.</li>
+                            <li>Xuất hiện suốt đêm giữa mùa hạ sang đầu mùa thu (tháng 5 – 8).</li>
+                            <li>Mùa đông (tháng 10 – 12) xuất hiện từ chập tối đến nửa đêm, gần về sáng thì lặng.</li>
+                            <li>Mọc sau chòm Gấu lớn hơn 6 giờ.</li>
+                            </ul>
+                            <h3>Bằng chòm Ngự Phu:</h3>
+<ul>
+    <li><strong>Tên gọi:</strong> Cocher – Charioteer – Auriga – Phu xe (Ngự Phu).</li>
+    <li><strong>Mô tả:</strong>
+        <ul>
+            <li>Gồm 5 sao tạo thành hình ngũ giác không đều.</li>
+            <li>Ngôi sao sáng nhất là Đê Cái, xung quanh là các sao mờ hơn – gọi là Đê Con.</li>
+        </ul>
+    </li>
+</ul>
+<img src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t1.15752-9/491295550_564585369529933_6024344589376302337_n.png?_nc_cat=102&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeFLKpFjTTlrPuHM64q2cKj1MqeQzlJ5rRcyp5DOUnmtF-15TVaIsHSutWTNs40OrlPdEtiiRuLG813ao_bYw85Z&_nc_ohc=s16uncEcMDIQ7kNvwHg5xTG&_nc_oc=AdmQPv76mRTj4hicx0_ih8Acz4Uyrvd8F_O2wBtEeXWhCwGqaYQBoShSXaw6xAv8QoI&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-8.fna&oh=03_Q7cD2AEjJf3RkK3ekRl5w1nEzM-mY2KBmXZxWJrfDEcaw8cJSA&oe=6831BA35">
+<h4>Định phương hướng:</h4>
+<ul>
+    <li>Kéo dài cạnh ab khoảng 5 lần sẽ gặp sao Bắc Cực.</li>
+    <li>Xuất hiện sau chòm Thiên Hậu khoảng 6 giờ.</li>
+    <li>Biến mất khoảng tháng 6.</li>
+    <img src="https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.15752-9/491278781_1884441945671146_3516684451871846295_n.png?stp=dst-png_s480x480&_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeELuw4-8iQLzZcWLnpGVhc8WEVpdA-d37hYRWl0D53fuKs0P2be19N0pPGDgwlr4NqwFp6nQb1_efXBgegmwbpg&_nc_ohc=QRvYBkK7-LUQ7kNvwHziex6&_nc_oc=AdmUkOeVP_UJprOOlDaqLs90VOuQGrtxAlAwZ4nb1tIKUAkO6uLIPWcWH59_qYtLvZQ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&oh=03_Q7cD2AHCWysBqiRf1aQ8g5ArQJOPuTjnjzu24xJPSm4CIRZGUw&oe=6831B2A2">
+</ul>
+<h3>Bằng chòm Thiên Hậu:</h3>
+<ul>
+    <li><strong>Tên gọi:</strong> Cassiopée – The lady in the chair – Cassiopeia – Thiên Hậu.</li>
+    <li><strong>Mô tả:</strong>
+        <ul>
+            <li>Gồm 5 sao chính tạo hình dạng giống chữ M hoặc W tùy thời điểm mọc/lặn.</li>
+            <li>Khi mới mọc: hình con số 3.</li>
+            <li>Khi lên cao: hình chữ M.</li>
+            <li>Khi sắp lặn: hình chữ W.</li>
+        </ul>
+    </li>
+</ul>
+<img src="https://scontent.fsgn2-8.fna.fbcdn.net/v/t1.15752-9/490987981_896051382615544_4699408393609339461_n.png?_nc_cat=102&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeEcBVIwUCvWPJYcKVG9-gLMNGMViNC-QHg0YxWI0L5AeO_IngbCsY61QetWUyZ0UtNx6rT7ARxrWrxjOFBK-z3g&_nc_ohc=_vr_MgZfFbcQ7kNvwEVW71m&_nc_oc=AdnxjnmzuaXbifoyC9462OkeGTYFABc14jZfB76I4d4y_AJR8gn7nycO07rq9B_gzsY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-8.fna&oh=03_Q7cD2AEZC33hbt-zGC5UE9o5Z_CDgKqHHUWlwBhBjQE0KknvQg&oe=6831A244".
+<h4>Định phương hướng:</h4>
+<ul>
+    <li>Kẻ đường gần vuông góc với cạnh thứ 3 của chữ M/W, kéo dài khoảng 7 lần sẽ gặp sao Bắc Cực.</li>
+    <li>Xuất hiện từ tháng 9 và có mặt suốt đêm từ cuối thu đến giữa đông (tháng 9–11).</li>
+    <li>Mọc sau chòm Thiên Nga khoảng 6 giờ.</li>
+    <img src="https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.15752-9/490986525_1340856673856533_6016272276517274703_n.png?stp=dst-png_s480x480&_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeGA3vKrFXr4JzEv6B494Z0Az0-t-ISFCDrPT634hIUIOom61vXBq1xA6mne7f72tXvrE-5tO_8aEk78KQuEW_Ci&_nc_ohc=L999P0W_5wAQ7kNvwG3FXMk&_nc_oc=AdkysgaL3BMmNN6Q4N8cCtKCiBu-5UGh2fMRQNQn2M4TePvDR98t1PZrkEb14hoFfE4&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&oh=03_Q7cD2AHbVqSPXZEExe0NmZRrhXKht5HTwsYzR6II2yJ9UkvG6w&oe=68319985">
+    <h3>Bằng chòm Hiệp Sĩ:</h3>
+<ul>
+    <li><strong>Tên gọi:</strong> Orio – Hunter – Orion – Tướng quân – Hiệp Sĩ – Thần săn.</li>
+    <li><strong>Mô tả:</strong>
+        <ul>
+            <li>3 sao xếp hình tam giác tạo cái đầu.</li>
+            <li>3 sao sáng nhất ở giữa tạo thành "giải đai lưng".</li>
+            <li>Một vòng sao ở bên trái tượng trưng cho khiên (cái mộc).</li>
+            <li>3 sao ở bên phải tượng trưng cho vũ khí.</li>
+            <li>Hình dạng giống người Hiệp Sĩ đang cầm khiên và dao.</li>
+        </ul>
+    </li>
+</ul>
+<img src="https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.15752-9/490986525_1340856673856533_6016272276517274703_n.png?stp=dst-png_s480x480&_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeGA3vKrFXr4JzEv6B494Z0Az0-t-ISFCDrPT634hIUIOom61vXBq1xA6mne7f72tXvrE-5tO_8aEk78KQuEW_Ci&_nc_ohc=L999P0W_5wAQ7kNvwG3FXMk&_nc_oc=AdkysgaL3BMmNN6Q4N8cCtKCiBu-5UGh2fMRQNQn2M4TePvDR98t1PZrkEb14hoFfE4&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&oh=03_Q7cD2AHbVqSPXZEExe0NmZRrhXKht5HTwsYzR6II2yJ9UkvG6w&oe=68319985">
+<h4>Định phương hướng:</h4>
+<ul>
+    <li>Người Việt có câu: “Nhìn lên trời thấy sao sao sao – Em không biết phương Nam nơi nào…”</li>
+    <li>Kéo dài giải đai lưng sẽ chỉ hướng Nam.</li>
+    <li>Nam vắt ngang xích đạo trời.</li>
+    <li>Xuất hiện từ tháng 10 đến tháng 4, biến mất vào tháng 6.</li>
+    <li>Chòm sao thuộc bán cầu Nam.</li>
+</ul>
+<img src="https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.15752-9/490989030_640665385464035_8312258900759844778_n.png?stp=dst-png_s480x480&_nc_cat=110&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeEu5UZTPRmHI_TB8frTUzlUCrGu9mpMChQKsa72akwKFEdy0Lrw5ZZuuBZRyHp2ApVf3GdQOt-Qz-jJPKu-79uH&_nc_ohc=icM87U-HXZQQ7kNvwHuZa9d&_nc_oc=AdkzSZwcCRomoMt4GntkY_BWTM3g5r1FuQh-Xix8zCOgGtPUTO3FhYSeBWHwhzKK5sE&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&oh=03_Q7cD2AHvE6T1nbRUxWLH4g2l3eTtpDDSymugeEPVq-EZK0P-kw&oe=6831B7BB">
+</ul>
+<h3>Bằng sao Mai, sao Hôm:</h3>
+<ul>
+    <li>Sao Mai và sao Hôm thực chất là một sao – chính là sao Kim (Venus).</li>
+    <li><strong>Sao Hôm:</strong> Xuất hiện sau hoàng hôn ở phía Tây.</li>
+    <li><strong>Sao Mai:</strong> Xuất hiện trước bình minh ở phía Đông.</li>
+    <li>Lưu ý: khi thấy sao Hôm, chắc chắn đó là hướng Tây và ngược lại với sao Mai.</li>
+</ul>
+<h3>Bằng chòm Thần Nông & Bọ Cạp:</h3>
+<ul>
+    <li>Chòm sao Thần Nông còn gọi là chòm Bọ Cạp (Nam bán cầu).</li>
+    <li>Người phương Tây gọi nhóm sao gần chòm Hiệp Sĩ là chòm Bọ Cạp – xuất hiện vào khoảng tháng 5 đến tháng 8.</li>
+    <li>Liên quan chặt chẽ đến chòm Hiệp Sĩ.</li>
+</ul>
+<h3>Phụ chú – Lưu ý khi tìm sao</h3>
+<ul>
+    <img src="https://scontent.fsgn2-5.fna.fbcdn.net/v/t1.15752-9/490988304_1363041235004948_7508608504817034051_n.png?stp=dst-png_p480x480&_nc_cat=104&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeF4CLOynwBEl87xR-t8No_1Li5gEBTH8VcuLmAQFMfxVy5iZUjjXKTipxLJL4QlNPIz-ids4bJ1ZfQk1238tmHl&_nc_ohc=Hda_O9qQHBkQ7kNvwFxjjWv&_nc_oc=AdkFOaYbvjRnU4GNwabbRVQBm_U3B8JprUdYT_hYcOhBAt9_21lIioHHdu0VnEuu2qs&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fsgn2-5.fna&oh=03_Q7cD2AHA0jqh8JM1SztW7uSJT5gIZWpwyK1my0a252dnRt0EwA&oe=6831C37B">
+    <li>Chòm Gấu Lớn giúp xác định hướng Bắc (kéo dài đáy soong).</li>
+    <li>Chòm Đại Hùng Tinh – dễ thấy và có mặt suốt năm.</li>
+    <li>Chòm Gấu Nhỏ – có sao Bắc Cực – luôn nằm ở cùng vị trí trên bầu trời.</li>
+    <li>Không nên xác định hướng vào các đêm trăng sáng hoặc nhiều mây.</li>
+    <li>Nên tập luyện thường xuyên để nhận diện các hình dạng đặc trưng của chòm sao.</li>
+</ul>
+
+
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main> 
+          </section>
+       
+          <section id="section7" class="content-section">
+              <h2>Tìm phương hướng bằng địa bàn</h2>
+              <main class="content-area">
+                <section class="content-section">
+                    <article class="post">
+                        <p>
+                            <ul>
+                                <li>Trái đất là một khối nam châm với hai cực từ Bắc – Nam.</li>
+                                <li>Địa bàn (la bàn) được chế tạo dựa trên từ tính của Trái đất.</li>
+                                <li><strong>Loại phổ biến:</strong>
+                                  <ul>
+                                    <li>Loại có kim nam châm quay tự do, đầu mũi tên chỉ hướng Bắc.</li>
+                                    <li>Loại không có kim, chỉ có mặt tròn khắc chữ N hoặc mũi tên.</li>
+                                  </ul>
+                                </li>
+                              </ul>
+                              
+                              <h4>Cách sử dụng:</h4>
+                              <ul>
+                                <li>Mở nắp nếu có, đặt địa bàn nằm ngang trên mặt phẳng.</li>
+                                <li>Chờ kim ổn định, đầu mũi tên chỉ về hướng Bắc.</li>
+                              </ul>
+                              
+                              <h4>Chú ý:</h4>
+                              <ul>
+                                <li>Không dùng gần sắt, kim loại lớn hoặc dây điện cao thế.</li>
+                              </ul>
+                        </p>
+                        <p><strong>Nguồn:</strong> Hội LHTN TP.HCM</p>
+                    </article>
+                </section>
+            </main>
+          </section>
+      </main>
+  </div>
+  <main class="content-area">
+    {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+    <div class="text-right mb-3">
+        <a href="{% url 'create_post' %}" class="btn btn-primary">Đăng bài mới</a>
+    </div>
+    {% endif %}
+    
+    {% for section_id, section_data in sections.items %}
+    <section id="{{ section_id }}" class="content-section">
+        <h2>{{ section_data.title }}</h2>
+        
+        {% if section_data.posts.exists %}  <!-- Kiểm tra có bài viết -->
+        <div class="article-list">
+            {% for post in section_data.posts.all %}  <!-- Thêm .all() -->
+            <div class="article-item mb-4">
+                <h3>{{ post.title }}</h3>
+                <p class="text-muted">
+                    Đăng bởi {{ post.author.username }} 
+                    vào {{ post.created_at|date:"d/m/Y" }}
+                </p>
+                <p>{{ post.content|linebreaks }}</p>
+                {% if post.uploaded_file %}
+                <p>
+                <a href="{{ post.uploaded_file.url }}" target="_blank">Tải tài liệu đính kèm</a>
+                </p>
+                {% endif %}
+
+                {% if post.video_url %}
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="{{ post.video_url }}" allowfullscreen></iframe>
+                </div>
+                {% endif %}
+                {% if post.source %}
+                    <p class="text-muted" style="font-size: 0.9em;">Nguồn: {{ post.source }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Chưa có bài viết nào trong mục này.</p>
+        {% endif %}
+    </section>
+    {% endfor %}
+</main>
+  {% endblock %}
+
+
+  {% block extra_js %}
+  <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          // Xử lý menu dropdown khi tràn màn hình
+          let submenus = document.querySelectorAll(".submenu, .subsubmenu, .subsubsubmenu");
+     
+          submenus.forEach(menu => {
+              menu.parentElement.addEventListener("mouseenter", function () {
+                  let rect = menu.getBoundingClientRect();
+                  let windowWidth = window.innerWidth;
+     
+                  if (rect.right > windowWidth) {
+                      menu.classList.add("show-left");
+                  } else {
+                      menu.classList.remove("show-left");
+                  }
+              });
+          });
+         
+          // Xử lý scroll mượt khi click vào mục lục
+          document.querySelectorAll('.toc-list a').forEach(anchor => {
+              anchor.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  const targetId = this.getAttribute('href');
+                  const targetElement = document.querySelector(targetId);
+                 
+                  if (targetElement) {
+                      window.scrollTo({
+                          top: targetElement.offsetTop - 20,
+                          behavior: 'smooth'
+                      });
+                     
+                      // Thêm lớp active tạm thời
+                      document.querySelectorAll('.toc-list a').forEach(link => {
+                          link.classList.remove('active');
+                      });
+                      this.classList.add('active');
+                     
+                      // Xóa lớp active sau 1s
+                      setTimeout(() => {
+                          this.classList.remove('active');
+                      }, 1000);
+                  }
+              });
+          });
+      });
+      document.querySelectorAll('.menu-item').forEach(item => {
+       if (!item.querySelector('.submenu')) {
+           item.addEventListener('click', function() {
+               window.location.href = this.dataset.href;
+           });
+       }
+   });
+  </script>
+  {% endblock %}
+
+
+
+
+
+
+

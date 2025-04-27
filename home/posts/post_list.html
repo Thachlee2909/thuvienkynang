@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh sách bài viết</title>
+</head>
+<body>
+    <h1>Các bài viết mới nhất</h1>
+    {% for post in posts %}
+        <div>
+            <h2>{{ post.title }}</h2>
+            <p>{{ post.content|truncatewords:50 }}</p>
+            <p>Đăng vào: {{ post.created_at }}</p>
+            <a href="{% url 'post_detail' post.slug %}">Xem chi tiết</a>
+        </div>
+        <hr>
+    {% empty %}
+        <p>Chưa có bài viết nào.</p>
+    {% endfor %}
+</body>
+</html>

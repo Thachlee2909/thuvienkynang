@@ -1,0 +1,621 @@
+{% extends 'base_app.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Questrial", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        background-color: #f0f8ff;
+    }
+    .slogan {
+        font-family: "Dancing Script", cursive;
+        font-optical-sizing: auto;
+        font-style: normal;
+    }
+   
+    /* Header */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #0077b6;
+        color: white;
+        padding: 10px 20px;
+    }
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .logo div {
+        display: flex;
+        flex-direction: column;
+    }
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+    .logo-text h2 {
+        margin-bottom: 0;
+    }
+    .logo-text p {
+        margin-top: 5px;
+        font-size: 14px;
+        opacity: 0.8;
+    }
+    nav {
+        display: flex;
+    }
+    .menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+    }
+    .menu > li {
+        position: relative;
+        padding: 15px 20px;
+        background: #0077b6;
+        color: white;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .menu > li:first-child {
+        background-color: #0077b6 !important;
+        color: white !important;
+        }
+        .menu > li:first-child > a {
+            color: white !important;
+        }
+    .menu > li:hover {
+        background-color: #005f99;
+    }
+   
+    /* Dropdown */
+    .submenu, .subsubmenu, .subsubsubmenu {
+        display: none;
+        position: absolute;
+        background: white;
+        color: #333;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        min-width: 200px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0s 0.3s;
+    }
+    .submenu {
+        top: 100%;
+        left: 0;
+    }
+    .submenu li, .subsubmenu li, .subsubsubmenu li {
+        padding: 8px 15px;
+        font-size: 16px;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.3s ease;
+        white-space: nowrap;
+    }
+    .menu > li:hover > .submenu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+    }
+    .submenu li {
+        position: relative;
+    }
+    .submenu li:hover > .subsubmenu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+    }
+    .subsubmenu {
+        top: 0;
+        left: 100%;
+    }
+    .subsubmenu li {
+        position: relative;
+    }
+    .subsubmenu li:hover > .subsubsubmenu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+    }
+    .subsubsubmenu {
+        top: 0;
+        left: 100%;
+    }
+    .submenu.show-left, .subsubmenu.show-left, .subsubsubmenu.show-left {
+        left: auto;
+        right: 100%;
+    }
+    .submenu li:hover, .subsubmenu li:hover, .subsubsubmenu li:hover {
+        background-color: #f1f1f1;
+    }
+   
+    /* Layout chính - Mục lục bên trái, nội dung bên phải */
+    .main-content {
+        display: flex;
+        flex: 1;
+    }
+   
+    /* Sidebar mục lục */
+    .sidebar {
+        width: 250px;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+   
+    .toc-title {
+        font-size: 24px;
+        color: #0077b6;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #0077b6;
+    }
+   
+    .toc-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+   
+    .toc-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+   
+    .toc-list a {
+        color: #333;
+        text-decoration: none;
+        font-size: 16px;
+        transition: all 0.3s;
+        display: block;
+    }
+   
+    .toc-list a:hover {
+        color: #0077b6;
+        padding-left: 5px;
+    }
+   
+    /* Phần nội dung chính */
+    .content-area {
+        flex: 1;
+        padding: 30px;
+    }
+   
+    .content-section {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+   
+    .content-section h2 {
+        color: #0077b6;
+        border-bottom: 2px solid #0077b6;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+   
+    /* Responsive */
+    @media (max-width: 768px) {
+        .main-content {
+            flex-direction: column;
+        }
+       
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: static;
+        }
+       
+        .content-area {
+            padding: 15px;
+        }
+    }
+    .article-content {
+        line-height: 1.6;
+        font-size: 16px;
+    }
+
+    .article-content p {
+        margin-bottom: 1em;
+    }
+
+    .article-item {
+        padding: 15px;
+        border-left: 3px solid #0077b6;
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #0077b6;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #005f99;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        background-color: transparent;
+        border: 1px solid #0077b6;
+        color: #0077b6;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0077b6;
+        color: white;
+    }
+
+    .text-muted {
+        color: #6c757d;
+        font-size: 0.9em;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+    .auth-section {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        padding: 0 20px;
+    }
+    
+    .auth-buttons, .user-info {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .auth-button {
+        padding: 8px 15px;
+        background-color: #0077b6;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    
+    .auth-button:hover {
+        background-color: #005f99;
+    }
+    
+    .user-info {
+        align-items: center;
+        color: white;
+        font-size: 14px;
+    }
+    .menu a, 
+    .menu a:visited, 
+    .menu a:hover, 
+    .menu a:active {
+    color: black !important; /* Màu đen */
+    text-decoration: none !important; /* Không gạch chân */
+    font-family: "Questrial", sans-serif !important; /* Giữ nguyên phông chữ */
+    }
+    .submenu a, 
+    .submenu a:visited, 
+    .submenu a:hover, 
+    .submenu a:active,
+    .subsubmenu a,
+    .subsubmenu a:visited,
+    .subsubmenu a:hover,
+    .subsubmenu a:active,
+    .subsubsubmenu a,
+    .subsubsubmenu a:visited,
+    .subsubsubmenu a:hover,
+    .subsubsubmenu a:active {
+    color: #333 !important; /* Màu đen đậm */
+    text-decoration: none !important;
+    font-family: "Questrial", sans-serif !important;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<header>
+    <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
+    <div class="logo">
+        <img src="https://upload.wikimedia.org/wikipedia/vi/0/09/Huy_Hi%E1%BB%87u_%C4%90o%C3%A0n.png" alt="Logo 1" height="60">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bi%E1%BB%83u_tr%C6%B0ng_H%E1%BB%99i_Li%C3%AAn_hi%E1%BB%87p_Thanh_ni%C3%AAn_Vi%E1%BB%87t_Nam.svg/1200px-Bi%E1%BB%83u_tr%C6%B0ng_H%E1%BB%99i_Li%C3%AAn_hi%E1%BB%87p_Thanh_ni%C3%AAn_Vi%E1%BB%87t_Nam.svg.png" alt="Logo 2" height="60">
+        <img src="https://upload.wikimedia.org/wikipedia/vi/d/df/Huy_hi%E1%BB%87u_%C4%90%E1%BB%99i_TNTP_H%E1%BB%93_Ch%C3%AD_Minh_%282018%29.png" alt="Logo 3" height="60">
+        <div class="logo-text">
+            <h2>THƯ VIỆN KỸ NĂNG</h2>
+            <p style="font-size: 14px; margin: 0; opacity: 0.8; display: block;" class="slogan">"Thanh thiếu niên thành phố vững kiến thức, thạo kỹ năng"</p>
+        </div>
+    </div>
+</a>
+<nav>
+    <ul class="menu">
+    <li><a href="{% url 'kienthuc' %}" class="menu-item" id="kienthuc">Kiến thức</a></li>
+        <li>
+            Kỹ năng truyền tin
+            <ul class="submenu">
+                <li><a href="{% url 'morse' %}" class="menu-item">Morse</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Luyện tập</li>
+                    </ul>
+                </li>
+                <li>
+                 <a href="{% url 'semaphore' %}" class="menu-item">Semaphore</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Luyện tập</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'matthu' %}" class="menu-item">
+                    Mật thư
+                </a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Luyện tập
+                            <ul class="subsubsubmenu">
+                                <li>Thay thế</li>
+                                <li>Dời chỗ</li>
+                                <li>Ẩn dấu</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Dấu đường</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Kỹ năng trại
+            <ul class="submenu">
+                <li><a href="{% url 'nutday' %}" class="menu-item">Nút dây</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'leutrai' %}" class="menu-item">Lều trại</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Kỹ năng dã ngoại
+            <ul class="submenu">
+                <li><a href="{% url 'phuonghuong' %}" class="menu-item">Phương hướng</a>
+                </li>
+                <li><a href="{% url 'uocdat' %}" class="menu-item">Ước đạc - Ước lượng</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Kỹ năng sinh hoạt tập thể
+            <ul class="submenu">
+                <li><a href="{% url 'muahat' %}" class="menu-item">Múa hát tập thể</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'trochoi' %}" class="menu-item">Trò chơi lớn</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Kỹ năng thực hành xã hội
+            <ul class="submenu">
+                <li><a href="{% url 'thoathiem' %}" class="menu-item">Kỹ năng thoát hiểm</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'thuoctay' %}" class="menu-item">Nhận biết thuốc tây</a>
+                    <ul class="subsubmenu">
+                        <li>Nhận biết một số loại thuốc phổ biến</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'thuocnam' %}" class="menu-item">Nhận biết thuốc nam</a>
+                    <ul class="subsubmenu">
+                        <li>Nhận biết một số loại thuốc nam phổ biến</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'scc' %}" class="menu-item">Sơ cấp cứu</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Nghiệp Vụ
+            <ul class="submenu">
+                <li><a href="{% url 'nghithucdoi' %}" class="menu-item">Nghi thức Đội</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'nghithucdoi' %}" class="menu-item">Nghi thức Hội</a>
+                    <ul class="subsubmenu">
+                        <li>Lý thuyết</li>
+                        <li>Thực hành</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>Cộng đồng</li>
+    </ul>
+</nav>
+<div class="auth-section">
+ {% if user.is_authenticated %}
+     <div class="user-info">
+         <span>Xin chào, {{ user.username }}</span>
+        <!-- <a href="{% url 'dashboard' %}" class="auth-button">Vào Dashboard</a> -->
+         <a href="{% url 'logout' %}" class="auth-button">Đăng xuất</a>
+     </div>
+ {% else %}
+     <div class="auth-buttons">
+         <a href="{% url 'login' %}" class="auth-button btn btn-success">Đăng nhập</a>
+     </div>
+ {% endif %}
+</div> 
+</header>
+
+
+<div class="main-content">
+   <!-- Sidebar mục lục -->
+   <aside class="sidebar">
+       <h2 class="toc-title">Mục lục</h2>
+       <ul class="toc-list">
+           <li><a href="#section1">Kiến thức về lịch sử, địa lý, văn hoá, xã hội, tình hình kinh tế - chính trị của đất nước</a></li>
+           <li><a href="#section2">Kiến thức về tổ chức Đoàn - Hội - Đội</a></li>
+           <li><a href="#section3">Kiến thức về nghi thức - điều lệ</a></li>
+       </ul>
+   </aside>
+
+   <main class="content-area">
+    {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+    <div class="text-right mb-3">
+        <a href="{% url 'create_post' %}" class="btn btn-primary">Đăng bài mới</a>
+    </div>
+    {% endif %}
+    
+    {% for section_id, section_data in sections.items %}
+    <section id="{{ section_id }}" class="content-section">
+        <h2>{{ section_data.title }}</h2>
+        
+        {% if section_data.posts.exists %}  <!-- Kiểm tra có bài viết -->
+        <div class="article-list">
+            {% for post in section_data.posts.all %}  <!-- Thêm .all() -->
+            <div class="article-item mb-4">
+                <h3>{{ post.title }}</h3>
+                <p class="text-muted">
+                    Đăng bởi {{ post.author.username }} 
+                    vào {{ post.created_at|date:"d/m/Y" }}
+                </p>
+                <p>{{ post.content|linebreaks }}</p>
+                {% if post.uploaded_file %}
+                <p>
+                <a href="{{ post.uploaded_file.url }}" target="_blank">Tải tài liệu đính kèm</a>
+                </p>
+                {% endif %}
+
+                {% if post.video_url %}
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="{{ post.video_url }}" allowfullscreen></iframe>
+                </div>
+                {% endif %}
+                {% if post.source %}
+                    <p class="text-muted" style="font-size: 0.9em;">Nguồn: {{ post.source }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Chưa có bài viết nào trong mục này.</p>
+        {% endif %}
+    </section>
+    {% endfor %}
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Xử lý menu dropdown khi tràn màn hình
+        let submenus = document.querySelectorAll(".submenu, .subsubmenu, .subsubsubmenu");
+   
+        submenus.forEach(menu => {
+            menu.parentElement.addEventListener("mouseenter", function () {
+                let rect = menu.getBoundingClientRect();
+                let windowWidth = window.innerWidth;
+   
+                if (rect.right > windowWidth) {
+                    menu.classList.add("show-left");
+                } else {
+                    menu.classList.remove("show-left");
+                }
+            });
+        });
+       
+        // Xử lý scroll mượt khi click vào mục lục
+        document.querySelectorAll('.toc-list a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+               
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                   
+                    // Thêm lớp active tạm thời
+                    document.querySelectorAll('.toc-list a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                   
+                    // Xóa lớp active sau 1s
+                    setTimeout(() => {
+                        this.classList.remove('active');
+                    }, 1000);
+                }
+            });
+        });
+    });
+    document.querySelectorAll('.menu-item').forEach(item => {
+     if (!item.querySelector('.submenu')) {
+         item.addEventListener('click', function() {
+             window.location.href = this.dataset.href;
+         });
+     }
+ });
+</script>
+{% endblock %}

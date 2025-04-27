@@ -1,0 +1,17 @@
+{% extends 'base_app.html' %}
+
+{% block content %}
+<div class="main-content">
+    <main class="content-area">
+        <section class="content-section">
+            <h2>Chỉnh sửa bài viết: {{ article.title }}</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <a href="{% url 'article_detail' article.slug %}" class="btn btn-outline-primary">Hủy</a>
+            </form>
+        </section>
+    </main>
+</div>
+{% endblock %}

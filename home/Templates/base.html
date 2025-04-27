@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Trang Chủ{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        rel="stylesheet"
+    >
+    <style>
+        /* Reset & body setup */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Căn giữa theo chiều ngang toàn bộ nội dung */
+        }
+
+        .navbar {
+            background-color: white;
+            width: 100%;
+            padding: 8px 32px; /* Đã giảm chiều cao của navbar */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .navbar a {
+            color: #005f99;
+            font-weight: 500;
+            text-decoration: none;
+            margin-left: 16px;
+        }
+
+        .container {
+            flex: 1; /* Để container chiếm phần không gian còn lại */
+            display: flex;
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            padding: 40px 20px;
+            width: 100%; /* Đảm bảo container chiếm hết chiều ngang để căn giữa con */
+        }
+
+        /* Ô trắng bao quanh phần nội dung */
+        .content-wrapper {
+            background-color: white; /* Màu trắng cho ô bao quanh */
+            border-radius: 20px; /* Bo tròn góc */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+            padding: 40px; /* Khoảng cách bên trong ô trắng */
+            width: 100%;
+            max-width: 420px; /* Chiều rộng tối đa của ô trắng */
+            text-align: center; /* Căn giữa nội dung bên trong ô trắng */
+        }
+
+        /* Thêm phần styles cho các phần khác */
+        .btn-login {
+            background-color: #0077b6;
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background-color: #005f99;
+        }
+
+        .messages {
+            list-style: none;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .messages li {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #e7f3fe;
+            color: #0077b6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar cố định trên cùng -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="{% url 'login' %}">Đăng nhập</a>
+                <a class="nav-item nav-link" href="{% url 'register' %}">Đăng ký</a>
+            </div>
+            <a class="navbar-brand" href="{% url 'home' %}" style="margin-left: auto;">Trang Chủ</a>
+        </div>
+    </nav>
+
+    <!-- Nội dung chính căn giữa toàn màn -->
+    <div class="main-container d-flex justify-content-center align-items-center">
+        <div class="auth-container">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- Block content để các trang khác kế thừa -->
+            <div class="content-wrapper">
+                {% block content %}
+                <!-- Nội dung trang sẽ được chèn ở đây -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
